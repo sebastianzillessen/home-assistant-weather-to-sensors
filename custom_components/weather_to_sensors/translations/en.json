@@ -1,0 +1,33 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Weather to Sensors",
+        "description": "Pick a weather entity. A sensor is created for each of its numeric attributes (temperature, humidity, pressure, wind, …) with the right unit and device class.",
+        "data": {
+          "source": "Weather entity",
+          "name": "Name"
+        }
+      }
+    },
+    "abort": {
+      "already_configured": "This weather entity is already set up."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "temperature": { "name": "Temperature" },
+      "apparent_temperature": { "name": "Apparent temperature" },
+      "dew_point": { "name": "Dew point" },
+      "humidity": { "name": "Humidity" },
+      "pressure": { "name": "Pressure" },
+      "wind_speed": { "name": "Wind speed" },
+      "wind_gust_speed": { "name": "Wind gust speed" },
+      "wind_bearing": { "name": "Wind bearing" },
+      "cloud_coverage": { "name": "Cloud coverage" },
+      "uv_index": { "name": "UV index" },
+      "visibility": { "name": "Visibility" },
+      "ozone": { "name": "Ozone" }
+    }
+  }
+}
