@@ -20,3 +20,7 @@ jobs:
       - uses: hacs/action@main
         with:
           category: integration
+          # Custom integration not listed in home-assistant/brands, so skip the
+          # brands asset check. Repository description and topics are set in the
+          # repo settings (also required for HACS validation).
+          ignore: brands
