@@ -1,0 +1,33 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Weather to Sensors",
+        "description": "Wähle eine Wetter-Entity. Für jedes numerische Attribut (Temperatur, Luftfeuchte, Druck, Wind, …) wird ein Sensor mit korrekter Einheit und Geräteklasse erstellt.",
+        "data": {
+          "source": "Wetter-Entity",
+          "name": "Name"
+        }
+      }
+    },
+    "abort": {
+      "already_configured": "Diese Wetter-Entity ist bereits eingerichtet."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "temperature": { "name": "Temperatur" },
+      "apparent_temperature": { "name": "Gefühlte Temperatur" },
+      "dew_point": { "name": "Taupunkt" },
+      "humidity": { "name": "Luftfeuchte" },
+      "pressure": { "name": "Luftdruck" },
+      "wind_speed": { "name": "Windgeschwindigkeit" },
+      "wind_gust_speed": { "name": "Windböen" },
+      "wind_bearing": { "name": "Windrichtung" },
+      "cloud_coverage": { "name": "Bewölkung" },
+      "uv_index": { "name": "UV-Index" },
+      "visibility": { "name": "Sichtweite" },
+      "ozone": { "name": "Ozon" }
+    }
+  }
+}

@@ -1,0 +1,63 @@
+name: release
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release tag to create (e.g. v0.1.0)"
+        required: true
+      prerelease:
+        description: "Mark as a pre-release"
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Resolve release metadata
+        id: meta
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "tag=${{ github.event.inputs.tag }}" >> "$GITHUB_OUTPUT"
+            echo "prerelease=${{ github.event.inputs.prerelease }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "tag=${{ github.event.release.tag_name }}" >> "$GITHUB_OUTPUT"
+            echo "prerelease=${{ github.event.release.prerelease }}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Set manifest version to the release tag
+        run: |
+          tag="${{ steps.meta.outputs.tag }}"
+          version="${tag#v}"
+          python3 - "$version" <<'PY'
+          import json
+          import sys
+
+          path = "custom_components/weather_to_sensors/manifest.json"
+          with open(path) as fh:
+              data = json.load(fh)
+          data["version"] = sys.argv[1]
+          with open(path, "w") as fh:
+              json.dump(data, fh, indent=2)
+              fh.write("\n")
+          PY
+
+      - name: Build the integration ZIP
+        run: |
+          cd custom_components/weather_to_sensors
+          zip -r "$GITHUB_WORKSPACE/weather_to_sensors.zip" . -x '*.pyc' '__pycache__/*'
+
+      - name: Publish release and attach the ZIP
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.meta.outputs.tag }}
+          prerelease: ${{ steps.meta.outputs.prerelease }}
+          files: weather_to_sensors.zip
