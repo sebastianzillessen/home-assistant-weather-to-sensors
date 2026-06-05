@@ -53,6 +53,7 @@ class WeatherAttributeSensor(SensorEntity):
         self, entry: ConfigEntry, desc: WeatherAttribute, unit: str | None
     ) -> None:
         self._source: str = entry.data[CONF_SOURCE]
+        self._desc = desc
         self._attribute = desc.attribute
         self._attr_translation_key = desc.translation_key
         self._attr_unique_id = f"{entry.entry_id}_{desc.attribute}"
@@ -85,6 +86,10 @@ class WeatherAttributeSensor(SensorEntity):
 
     async def async_added_to_hass(self) -> None:
         """Update whenever the source weather entity changes."""
+        # Re-resolve the unit now: at platform setup the source may not have
+        # been loaded yet (e.g. the weather integration loads after this one),
+        # which would otherwise leave the sensor permanently unit-less.
+        self._update_unit()
         self.async_on_remove(
             async_track_state_change_event(
                 self.hass, [self._source], self._source_changed
@@ -92,5 +97,19 @@ class WeatherAttributeSensor(SensorEntity):
         )
 
     @callback
+    def _update_unit(self) -> None:
+        """Refresh the unit from the source, keeping the last known one.
+
+        The unit is read from the source's ``*_unit`` attribute, which only
+        appears once the weather entity is loaded. We never overwrite a known
+        unit with ``None`` so the sensor doesn't flap to unit-less (which would
+        invalidate long-term statistics) while the source is briefly missing.
+        """
+        unit = _resolve_unit(self._desc, self.hass.states.get(self._source))
+        if unit is not None:
+            self._attr_native_unit_of_measurement = unit
+
+    @callback
     def _source_changed(self, event) -> None:
+        self._update_unit()
         self.async_write_ha_state()
