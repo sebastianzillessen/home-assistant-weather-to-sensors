@@ -1,3 +1,10 @@
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="custom_components/weather_to_sensors/brand/dark_logo.png">
+    <img src="custom_components/weather_to_sensors/brand/logo.png" alt="Weather to Sensors" width="420">
+  </picture>
+</p>
+
 # Weather to Sensors — Home Assistant integration
 
 Turn a **`weather.*` entity's attributes into regular sensors.**
