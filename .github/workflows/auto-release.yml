@@ -1,0 +1,40 @@
+name: auto-release
+
+# When a Renovate dependency update lands on the default branch, cut a
+# patch release of the integration itself (vX.Y.Z -> vX.Y.Z+1) so the
+# update ships to HACS users without a manual release.
+
+on:
+  pull_request:
+    types: [closed]
+
+jobs:
+  version:
+    if: >-
+      github.event.pull_request.merged == true &&
+      github.event.pull_request.base.ref == github.event.repository.default_branch &&
+      github.event.pull_request.user.login == 'renovate[bot]'
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.next.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Compute next patch version
+        id: next
+        run: |
+          latest="$(git tag --list 'v*' --sort=-v:refname | head -n 1)"
+          latest="${latest:-v0.0.0}"
+          IFS=. read -r major minor patch <<< "${latest#v}"
+          echo "tag=v${major}.${minor}.$((patch + 1))" >> "$GITHUB_OUTPUT"
+
+  release:
+    needs: version
+    permissions:
+      contents: write
+    uses: ./.github/workflows/release.yml
+    with:
+      tag: ${{ needs.version.outputs.tag }}
+      prerelease: false
