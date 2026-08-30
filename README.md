@@ -7,6 +7,8 @@
 
 # Weather to Sensors — Home Assistant integration
 
+[![validate](https://github.com/sebastianzillessen/home-assistant-weather-to-sensors/actions/workflows/validate.yml/badge.svg)](https://github.com/sebastianzillessen/home-assistant-weather-to-sensors/actions/workflows/validate.yml) [![Renovate enabled](https://img.shields.io/badge/renovate-enabled-brightgreen.svg)](https://docs.renovatebot.com/)
+
 Turn a **`weather.*` entity's attributes into regular sensors.**
 
 Home Assistant's `weather` entities keep their readings (temperature, humidity,
